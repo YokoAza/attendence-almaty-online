@@ -1,0 +1,62 @@
+
+@font-face{
+	font-family: 'GoodProMedium';
+	src: url('~@/assets/fonts/FontFont - GoodPro-Medium_0.otf') format('otf');
+}
+
+$input-slot-padding: 0 12px !default; 
+$body-font-family: 'GoodProMedium', sans-serif !default;
+
+$headings: (
+  'h4': (
+	'size': 1.8rem,
+	'letter-spacing': 0,
+	'line-height': 1.2
+   )
+);
+
+.studentsTable{
+	thead {
+		background-image: linear-gradient(to right,rgb(251, 171, 23) 0%,rgb(250, 191, 82) 100%);
+	}
+}
+
+.loyalty_good{
+	background: rgba($color: #64995b, $alpha: 1.0);
+	border-radius: 10px 10px 0px 0px;
+}
+
+.loyalty_bad{
+	background: rgba($color: #FF0000, $alpha: 1.0);
+	border-radius: 10px 10px 0px 0px;
+}
+
+.loyalty_norm{
+	background: rgba($color: #FF9933, $alpha: 1.0);
+	border-radius: 10px 10px 0px 0px;
+}
+
+.group_good{
+	background: rgba($color: #c1f0c1, $alpha: 1.0) !important;
+	border-color: #64995b !important;
+
+}
+
+.group_norm{
+	background: rgba($color: #FFD966, $alpha: 1.0) !important;
+	border-color: #FF9933 !important;
+}
+
+.group_bad{
+	background: rgba($color: #ffb3b3, $alpha: 1.0) !important;
+	border-color: #FF0000 !important;
+}
+
+body{
+	font-family: $body-font-family;
+}
+
+.v-text-field--rounded > .v-input__control > .v-input__slot {
+	padding : $input-slot-padding;
+}
+	
