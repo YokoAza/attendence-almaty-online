@@ -1274,110 +1274,113 @@ export default {
   methods: {
     
     async setAttendence() {
-      if (this.currentGroup.klass == 5) {
-      if (this.currentGroup.subject == "Математика") {
-        this.block = "5";
-        this.blocks = ["4.1", "4.2", "5", "5.1", "5.2", "6.1", "6.2"];
-      } else if (this.currentGroup.subject == "Казахский язык") {
-        this.block = "5";
-      } else if (this.currentGroup.subject == "Русский язык") {
-        this.block = "5";
-      } else if (this.currentGroup.subject == "Английский язык") {
-        this.block = "1";
-        this.blocks = ["1", "2", "3", "4"];
-      } else if (this.currentGroup.subject == "Логика") {
-        this.block = "5";
-      }
-    } else if (this.currentGroup.klass == 4) {
-      if (this.currentGroup.subject == "Математика") {
-        this.block = "4.1";
-        this.blocks = ["4.1", "4.2", "5", "5.1", "5.2", "6.1", "6.2"];
-      } else if (this.currentGroup.subject == "Казахский язык") {
-        this.block = "4";
-      } else if (this.currentGroup.subject == "Русский язык") {
-        this.block = "4";
-      } else if (this.currentGroup.subject == "Английский язык") {
-        this.block = "1";
-        this.blocks = ["1", "2", "3", "4"];
-      } else if (this.currentGroup.subject == "Логика") {
-        this.block = "4";
-      }
-    }
-      if (!this.valid) {
-        this.$refs.form.validate();
-        this.ScrollToError(this.$refs.form.errorBag);
-      }
-      if (this.valid) {
-        if (!this.click) {
-          this.click = true;
-          if (this.currentGroup.change && !this.equal) {
-            var code = await this.$store.dispatch("GetCode", {
-              Id: this.subTeacher.Id,
-            });
-            this.snackbarMessage = `Ваш код ${code.data}`;
-            this.snackbar = true;
-            this.click = false;
-            if (code.status == 200) {
-              this.code = code.data;
-              this.checkdialog = true;
-            } else if (code.status == 400 || code.status == 401) {
-              this.$router.push("/");
-            }
-          } else if (this.equal) {
-            var total = 0;
-            this.groupStudents.map(function(student) {
-              if (student.attendence) {
-                if (student.aibaks == 0) {
-                  if (student.homework > 3 && student.homework <= 7)
-                    student.aibaks += 1;
-                  else if (student.homework > 7 && student.homework <= 10)
-                    student.aibaks += 2;
-                  if (student.lesson > 50 && student.lesson <= 100)
-                    student.aibaks += 1;
-                }
-                total += student.aibaks;
+      if(confirm("Вы точно хотите отправить аттенданс?")){
+
+        if (this.currentGroup.klass == 5) {
+        if (this.currentGroup.subject == "Математика") {
+          this.block = "5";
+          this.blocks = ["4.1", "4.2", "5", "5.1", "5.2", "6.1", "6.2"];
+        } else if (this.currentGroup.subject == "Казахский язык") {
+          this.block = "5";
+        } else if (this.currentGroup.subject == "Русский язык") {
+          this.block = "5";
+        } else if (this.currentGroup.subject == "Английский язык") {
+          this.block = "1";
+          this.blocks = ["1", "2", "3", "4"];
+        } else if (this.currentGroup.subject == "Логика") {
+          this.block = "5";
+        }
+        } else if (this.currentGroup.klass == 4) {
+        if (this.currentGroup.subject == "Математика") {
+          this.block = "4.1";
+          this.blocks = ["4.1", "4.2", "5", "5.1", "5.2", "6.1", "6.2"];
+        } else if (this.currentGroup.subject == "Казахский язык") {
+          this.block = "4";
+        } else if (this.currentGroup.subject == "Русский язык") {
+          this.block = "4";
+        } else if (this.currentGroup.subject == "Английский язык") {
+          this.block = "1";
+          this.blocks = ["1", "2", "3", "4"];
+        } else if (this.currentGroup.subject == "Логика") {
+          this.block = "4";
+        }
+        }
+        if (!this.valid) {
+          this.$refs.form.validate();
+          this.ScrollToError(this.$refs.form.errorBag);
+        }
+        if (this.valid) {
+          if (!this.click) {
+            this.click = true;
+            if (this.currentGroup.change && !this.equal) {
+              var code = await this.$store.dispatch("GetCode", {
+                Id: this.subTeacher.Id,
+              });
+              this.snackbarMessage = `Ваш код ${code.data}`;
+              this.snackbar = true;
+              this.click = false;
+              if (code.status == 200) {
+                this.code = code.data;
+                this.checkdialog = true;
+              } else if (code.status == 400 || code.status == 401) {
+                this.$router.push("/");
               }
-            });
-            this.$store.dispatch("SetExtraFieldsGroup", {
-              params: this.extraparams,
-            });
-            this.overlay = true;
-            var response = await this.$store.dispatch("SetAttendenceT", {
-              group: this.currentGroup,
-              students: this.groupStudents,
-              teacherId: this.$store.state.currentTeacher.Id,
-              teacherName:
-                this.$store.state.currentTeacher.LastName +
-                " " +
-                this.$store.state.currentTeacher.FirstName,
-              Aibucks: total,
-              block: this.block,
-              topic: this.topic,
-              homework: this.homework,
-              foskres: this.foskres,
-              kolhar: this.kolhar,
-            });
-            this.overlay = false;
-            if (response.status == 200) {
-              this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;
-              this.path = "/journal";
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 500) {
-              this.messageModal = `Обновите и попробуйте еще раз либо перезайдите`;
-              this.path = null;
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 401 || response.status == 400) {
-              this.messageModal = response.text;
-              this.path = "/";
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 410) {
-              this.messageModal = response.text;
-              this.path = "/journal";
-              this.click = false;
-              this.dialog = true;
+            } else if (this.equal) {
+              var total = 0;
+              this.groupStudents.map(function(student) {
+                if (student.attendence) {
+                  if (student.aibaks == 0) {
+                    if (student.homework > 3 && student.homework <= 7)
+                      student.aibaks += 1;
+                    else if (student.homework > 7 && student.homework <= 10)
+                      student.aibaks += 2;
+                    if (student.lesson > 50 && student.lesson <= 100)
+                      student.aibaks += 1;
+                  }
+                  total += student.aibaks;
+                }
+              });
+              this.$store.dispatch("SetExtraFieldsGroup", {
+                params: this.extraparams,
+              });
+              this.overlay = true;
+              var response = await this.$store.dispatch("SetAttendenceT", {
+                group: this.currentGroup,
+                students: this.groupStudents,
+                teacherId: this.$store.state.currentTeacher.Id,
+                teacherName:
+                  this.$store.state.currentTeacher.LastName +
+                  " " +
+                  this.$store.state.currentTeacher.FirstName,
+                Aibucks: total,
+                block: this.block,
+                topic: this.topic,
+                homework: this.homework,
+                foskres: this.foskres,
+                kolhar: this.kolhar,
+              });
+              this.overlay = false;
+              if (response.status == 200) {
+                this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;
+                this.path = "/journal";
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 500) {
+                this.messageModal = `Обновите и попробуйте еще раз либо перезайдите`;
+                this.path = null;
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 401 || response.status == 400) {
+                this.messageModal = response.text;
+                this.path = "/";
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 410) {
+                this.messageModal = response.text;
+                this.path = "/journal";
+                this.click = false;
+                this.dialog = true;
+              }
             }
           }
         }

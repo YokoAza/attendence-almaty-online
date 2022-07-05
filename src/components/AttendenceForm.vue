@@ -1015,139 +1015,142 @@ export default {
   },
   methods: {
     async setAttendence() {
-      if (!this.valid) {
-        this.$refs.form.validate();
-        this.ScrollToError(this.$refs.form.errorBag);
-      }
-      if (this.valid) {
-        if (!this.click) {
-          this.click = true;
-          if (this.currentGroup.change && !this.equal) {
-            var code = await this.$store.dispatch("GetCode", {
-              Id: this.subTeacher.Id,
-            });
-            this.snackbarMessage = `Ваш код ${code.data}`;
-            this.snackbar = true;
-            this.click = false;
-            if (code.status == 200) {
-              this.code = code.data;
-              this.checkdialog = true;
-            } else if (code.status == 400 || code.status == 401) {
-              this.$router.push("/");
-            }
-          } else if (this.equal) {
-            var total = 0;
-            this.groupStudents.map(function(student) {
-              if (student.attendence) {
-                if (student.aibaks == 0) {
-                  if (student.homework > 3 && student.homework <= 7)
-                    student.aibaks += 1;
-                  else if (student.homework > 7 && student.homework <= 10)
-                    student.aibaks += 2;
-                  if (student.lesson > 50 && student.lesson <= 100)
-                    student.aibaks += 1;
-                }
-                total += student.aibaks;
+      if(confirm("Вы точно хотите отправить аттенданс?")){
+        if (!this.valid) {
+          this.$refs.form.validate();
+          this.ScrollToError(this.$refs.form.errorBag);
+        }
+        if (this.valid) {
+          if (!this.click) {
+            this.click = true;
+            if (this.currentGroup.change && !this.equal) {
+              var code = await this.$store.dispatch("GetCode", {
+                Id: this.subTeacher.Id,
+              });
+              this.snackbarMessage = `Ваш код ${code.data}`;
+              this.snackbar = true;
+              this.click = false;
+              if (code.status == 200) {
+                this.code = code.data;
+                this.checkdialog = true;
+              } else if (code.status == 400 || code.status == 401) {
+                this.$router.push("/");
               }
-            });
-            this.$store.dispatch("SetExtraFieldsGroup", {
-              params: this.extraparams,
-            });
-            this.overlay = true;
-            var response = await this.$store.dispatch("SetAttendence", {
-              group: this.currentGroup,
-              students: this.groupStudents,
-              teacherId: this.$store.state.currentTeacher.Id,
-              teacherName:
-                this.$store.state.currentTeacher.LastName +
-                " " +
-                this.$store.state.currentTeacher.FirstName,
-              Aibucks: total,
-              topic: this.topic,
-              homework: this.homework,
-              foskres: this.foskres,
-              kolhar: this.kolhar,
-            });
-            this.overlay = false;
-            console.log(response);
-            if (response.status == 200) {
-              this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;
-              this.path = "/journal";
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 100) {
-              this.messageModal = `Вы уже заполнили другой аттенданс сегодня в это время`;
-              this.path = "/journal";
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 500) {
-              this.messageModal = `Обновите и попробуйте еще раз либо перезайдите`;
-              this.path = null;
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 401 || response.status == 400) {
-              this.messageModal = response.text;
-              this.path = "/";
-              this.click = false;
-              this.dialog = true;
-            } else if (response.status == 410) {
-              this.messageModal = response.text;
-              this.path = "/journal";
-              this.click = false;
-              this.dialog = true;
+            } else if (this.equal) {
+              var total = 0;
+              this.groupStudents.map(function(student) {
+                if (student.attendence) {
+                  if (student.aibaks == 0) {
+                    if (student.homework > 3 && student.homework <= 7)
+                      student.aibaks += 1;
+                    else if (student.homework > 7 && student.homework <= 10)
+                      student.aibaks += 2;
+                    if (student.lesson > 50 && student.lesson <= 100)
+                      student.aibaks += 1;
+                  }
+                  total += student.aibaks;
+                }
+              });
+              this.$store.dispatch("SetExtraFieldsGroup", {
+                params: this.extraparams,
+              });
+              this.overlay = true;
+              var response = await this.$store.dispatch("SetAttendence", {
+                group: this.currentGroup,
+                students: this.groupStudents,
+                teacherId: this.$store.state.currentTeacher.Id,
+                teacherName:
+                  this.$store.state.currentTeacher.LastName +
+                  " " +
+                  this.$store.state.currentTeacher.FirstName,
+                Aibucks: total,
+                topic: this.topic,
+                homework: this.homework,
+                foskres: this.foskres,
+                kolhar: this.kolhar,
+              });
+              this.overlay = false;
+              console.log(response);
+              if (response.status == 200) {
+                this.messageModal = `Успешно добавлен.\n Количество Айбаксов - ${total}.\nПроверьте ЖУРНАЛ пожалуйста`;
+                this.path = "/journal";
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 100) {
+                this.messageModal = `Вы уже заполнили другой аттенданс сегодня в это время`;
+                this.path = "/journal";
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 500) {
+                this.messageModal = `Обновите и попробуйте еще раз либо перезайдите`;
+                this.path = null;
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 401 || response.status == 400) {
+                this.messageModal = response.text;
+                this.path = "/";
+                this.click = false;
+                this.dialog = true;
+              } else if (response.status == 410) {
+                this.messageModal = response.text;
+                this.path = "/journal";
+                this.click = false;
+                this.dialog = true;
+              }
             }
           }
         }
-      }
-    },
-    ScrollTop() {
-      window.scrollTo(0, 0);
-    },
-    ScrollToError(obj) {
-      var keys = Object.keys(obj);
-      var errors = [];
-      keys.map(function(key) {
-        if (obj[key] == true) errors.push({ id: key, value: obj[key] });
-      });
-      var error = errors.find((elem) => elem.value == true);
-      var element = document.getElementById(`input-${error.id}`);
-      element.scrollIntoView({ block: "center", behavior: "smooth" });
-    },
-    async GetOfficeRooms(group) {
-      this.groupRooms = await this.$store.dispatch("GetOfficeRooms", {
-        officeId: group.officeId,
-      });
-    },
-    onResize() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          this.isMobile = true;
-          break;
-        default:
-          this.isMobile = false;
-      }
-    },
-    RemoveStudent(index) {
-      if (this.groupStudents[index].delete) {
-        this.groupStudents[index].icon = "mdi-close-thick";
-        this.groupStudents[index].delete = false;
-        this.SortStudent();
-      } else {
-        this.groupStudents[index].icon = "mdi-pencil";
-        this.groupStudents[index].delete = true;
-        this.groupStudents[index].attendence = false;
-        this.SortStudent();
-      }
-    },
-    SortStudent() {
-      this.groupStudents.sort(function(a, b) {
-        if (a.delete) return 1;
-        if (b.delete) return -1;
-        if (a.name > b.name) return 1;
-        if (a.name < b.name) return -1;
+       }
+      },
+      ScrollTop() {
+        window.scrollTo(0, 0);
+      },
+      ScrollToError(obj) {
+        var keys = Object.keys(obj);
+        var errors = [];
+        keys.map(function(key) {
+          if (obj[key] == true) errors.push({ id: key, value: obj[key] });
+        });
+        var error = errors.find((elem) => elem.value == true);
+        var element = document.getElementById(`input-${error.id}`);
+        element.scrollIntoView({ block: "center", behavior: "smooth" });
+      },
+      async GetOfficeRooms(group) {
+        this.groupRooms = await this.$store.dispatch("GetOfficeRooms", {
+          officeId: group.officeId,
+        });
+      },
+      onResize() {
+        switch (this.$vuetify.breakpoint.name) {
+          case "xs":
+            this.isMobile = true;
+            break;
+          default:
+            this.isMobile = false;
+        }
+      },
+      RemoveStudent(index) {
+        if (this.groupStudents[index].delete) {
+          this.groupStudents[index].icon = "mdi-close-thick";
+          this.groupStudents[index].delete = false;
+          this.SortStudent();
+        } else {
+          this.groupStudents[index].icon = "mdi-pencil";
+          this.groupStudents[index].delete = true;
+          this.groupStudents[index].attendence = false;
+          this.SortStudent();
+        }
+      },
+      SortStudent() {
+        this.groupStudents.sort(function(a, b) {
+          if (a.delete) return 1;
+          if (b.delete) return -1;
+          if (a.name > b.name) return 1;
+          if (a.name < b.name) return -1;
 
-        return 0;
-      });
+          return 0;
+        });
+      
     },
     SelectEngLevel() {
       var level = this.engLevel ? this.engLevel.Id : null;

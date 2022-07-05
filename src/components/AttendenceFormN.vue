@@ -1144,6 +1144,8 @@ export default {
   },
   methods: {
     async setAttendence() {
+      if(confirm("Вы точно хотите отправить аттенданс?")){
+
       if (!this.valid) {
         this.$refs.form.validate();
         this.ScrollToError(this.$refs.form.errorBag);
@@ -1221,6 +1223,7 @@ export default {
           }
         }
       }
+    }
     },
     ScrollTop() {
       window.scrollTo(0, 0);
