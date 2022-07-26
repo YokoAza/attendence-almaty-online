@@ -85,14 +85,16 @@
             </v-row>
           </template>
           <template v-slot:[`item.Fine`]="{ item }">
-            <v-text-field
-            
+            <v-select
               v-model="item.Fine"
+              :items = 'lateMinutes'
+              item-text= "text"
+              item-value = "value"
               type="text"
               color="#fbab17"
               @change="addFine(item)"
             >
-            </v-text-field>
+            </v-select>
           </template>
           <template v-slot:[`item.Online`]="{ item }">
             <td v-if="item.Online == true">
@@ -421,6 +423,9 @@ export default {
     };
   },
   computed: {
+    lateMinutes(){
+      return this.$store.state.lateMinutes;
+    },
     adminRegisters() {
       return this.$store.state.adminRegisters;
     },
